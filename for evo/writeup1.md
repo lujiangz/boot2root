@@ -2727,7 +2727,9 @@ func4(9) = 55  <-- BINGO!
 
 Result
 
-```func4(var_8) == 55 so that var_8 = 9.``
+```func4(var_8) == 55 so that var_8 = 9.```
+
+``` phase_4 = 9 ```
 
 
 ```
@@ -2952,3 +2954,44 @@ thor@BornToSecHackMe:~$ echo -n "SLASH" | md5sum
 We can log in to the user **`zaz`**.
 
 
+```zaz : 646da671ca01bb5d84dbb5fb2238dc8e```
+
+
+
+When we log in as the zaz user, we encounter the following;
+
+```
+-rwsr-s--- 1 root     zaz  4880 Oct  8  2015 exploit_me
+drwxr-x--- 3 zaz      zaz   107 Oct  8  2015 mail
+```
+
+```
+zaz@BornToSecHackMe:~$ du mail/
+1       mail/.imap/INBOX.Drafts
+1       mail/.imap/INBOX.Sent
+1       mail/.imap/INBOX.Trash
+2       mail/.imap
+3       mail/
+```
+
+The mail folder was completely empty.
+
+Now we download the **`exploit_me`** program to our host machine to analyze it.
+
+
+```
+bool main(int param_1,int param_2)
+
+{
+  char local_90 [140];
+  
+  if (1 < param_1) {
+    strcpy(local_90,*(char **)(param_2 + 4));
+    puts(local_90);
+  }
+  return param_1 < 2;
+}
+
+```
+
+When we analyze the code, we see that it allocates a 140-byte space, but because it uses strcpy, there is a vulnerability here.
