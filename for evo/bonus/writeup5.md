@@ -29,4 +29,4 @@ After that
 https://192.168.193.128/forum/templates_c/lujiangz/home/LOOKATME/password
 ```
 
-Just like in Writeup1, we can continue on our way to become root.
+Just like in Writeup1, we can continue on our way to become a root in 4 different ways.
