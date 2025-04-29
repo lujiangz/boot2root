@@ -1,4 +1,8 @@
-[See detailed writeup here](writeup1.md)
+[See detailed writeup here 1](../writeup1.md)
+
+[See detailed writeup here 5](writeup5.md)
+
+
 
 After connecting as the Laurie user, we scan the system for vulnerabilities using LINPEAS.
 (You can do this from any user account.)
@@ -235,4 +239,4 @@ compile it and
 run ./dirty then enter password.
 ```
 
-FINALLY WE ARE ROOT #2 ;D
+FINALLY WE ARE ROOT #6 ;D

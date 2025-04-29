@@ -1,7 +1,8 @@
-[See detailed writeup here](../writeup1.md)
+[See detailed writeup here 1](../writeup1.md)
+
+[See detailed writeup here 5](writeup5.md)
 
 Log in as any user account.
-
 ```
 https://github.com/dirtycow/dirtycow.github.io/wiki/PoCs
 ```
@@ -46,4 +47,4 @@ root@BornToSecHackMe:/home/zaz# id
 uid=0(root) gid=1005(zaz) groups=0(root),1005(zaz)
 ```
 
-FINALLY WE ARE ROOT #3 ;D
+FINALLY WE ARE ROOT #7 ;D
