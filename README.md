@@ -1,7 +1,7 @@
 # Boot2Root
 
 
-![Boot2Root System Exploitation Flow](BOOT2ROOT.png)
+![Boot2Root System Exploitation Flow](boot2root.png)
 
 ## Project Overview
 
