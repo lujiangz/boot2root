@@ -2564,6 +2564,30 @@ Now let's solve all the phases step by step
 08048b83        
 08048b96        return result
 ```
+In order to better analyse the code here, we asked chatgpt to make the code readable. 
+We did not see a problem with this because it does not add anything to our learning.
+
+```
+int32_t phase_2(char* arg1) {
+    int32_t numbers[6];
+    read_six_numbers(arg1, numbers);
+
+    if (numbers[0] != 1) {
+        explode_bomb();
+    }
+
+    int32_t result = 0;
+    for (int32_t i = 1; i <= 5; i++) {
+        result = (i + 1) * numbers[i - 1];
+        if (numbers[i] != result) {
+            explode_bomb();
+        }
+    }
+
+    return result;
+}
+```
+
 
 ```
 x0 = 1 (first number)
@@ -2660,6 +2684,69 @@ x5 = (5 + 1) * x4 = 6 * 120 = 720
 ```
 
 ```
+int32_t phase_3(char* arg1) {
+    int32_t index, val;
+    char letter;
+
+    if (sscanf(arg1, "%d %c %d", &index, &letter, &val) <= 2) {
+        explode_bomb();
+    }
+
+    if (index > 7) {
+        letter = 'x';
+        explode_bomb();
+    }
+
+    char expected_char;
+    int expected_val;
+
+    switch (index) {
+        case 0:
+            expected_char = 'q';
+            expected_val = 0x309;
+            break;
+        case 1:
+            expected_char = 'b';
+            expected_val = 0xd6;
+            break;
+        case 2:
+            expected_char = 'b';
+            expected_val = 0x2f3;
+            break;
+        case 3:
+            expected_char = 'k';
+            expected_val = 0xfb;
+            break;
+        case 4:
+            expected_char = 'o';
+            expected_val = 0xa0;
+            break;
+        case 5:
+            expected_char = 't';
+            expected_val = 0x1ca;
+            break;
+        case 6:
+            expected_char = 'v';
+            expected_val = 0x30c;
+            break;
+        case 7:
+            expected_char = 'b';
+            expected_val = 0x20c;
+            break;
+        default:
+            explode_bomb();
+    }
+
+    if (val != expected_val || letter != expected_char) {
+        explode_bomb();
+    }
+
+    return index;
+}
+
+```
+
+```
 | First    (`result_1`)  | Character (Hex)| Karakter (ASCII) | Last Num  (Decimal) |
 |------------------------|----------------|------------------|---------------------|
 | 0                      |  0x71`         |  'q'             | 777                 |
@@ -2682,7 +2769,12 @@ x5 = (5 + 1) * x4 = 6 * 120 = 720
 - 6 v 780
 - 7 b 524
 ```
-```phase3 = 1 b 214```
+```
+phase3 = 1 b 214
+```
+
+
+
 
 ```
 08048ce0    int32_t phase_4(char* arg1)
@@ -2712,6 +2804,36 @@ Function fun4
 ```
 
 ```
+
+int32_t func4(int32_t n) 
+{
+    if (n <= 1) 
+	{
+        return 1;
+    }
+    return func4(n - 1) + func4(n - 2);
+}
+
+int32_t phase_4(char* arg1) 
+{
+    int32_t input;
+
+    if (sscanf(arg1, "%d", &input) != 1 || input <= 0) 
+	{
+        explode_bomb();
+    }
+
+    int32_t result = func4(input);
+
+    if (result == 0x37) { // 0x37 = 55
+        return result;
+    } else {
+        explode_bomb();
+    }
+}
+
+```
+```
 func4(0) = 1
 func4(1) = 1
 func4(2) = func4(1) + func4(0) = 1 + 1 = 2
@@ -2723,12 +2845,17 @@ func4(7) = 21
 func4(8) = 34
 func4(9) = 55  <-- BINGO!
 ```
-
+```
 Result
+func4(var_8) == 55 so that var_8 = 9.
+```
 
-```func4(var_8) == 55 so that var_8 = 9.```
+``` 
+phase_4 = 9 
+```
 
-``` phase_4 = 9 ```
+
+
 
 
 ```
@@ -2759,11 +2886,11 @@ Result
 
 ```
 ### Lookup Table
-```
 "isrveawhobpnutf"
  0123456789abcdef
 ```
 
+```
 ### Character Mapping
 For "giants":
 - 'g' is at position 15 (0xf)
@@ -2848,34 +2975,60 @@ For "giants":
 08048e90        return result
 ```
 
-1. **Input Requirements**:
+```
+int32_t phase_5(char* arg1) {
+    if (string_length(arg1) != 6) {
+        explode_bomb();
+    }
+
+    char var_c[6];
+    for (int i = 0; i <= 5; i++) {
+        int32_t eax = arg1[i];
+        eax &= 0xf;
+        eax = "isrveawhobpnutf"[eax];
+        var_c[i] = eax;
+    }
+
+    int32_t result = strings_not_equal(var_c, "giants");
+
+    if (result == 0) {
+        return result;
+    } else {
+        explode_bomb();
+    }
+}
+
+```
+
+```
+1. Input Requirements:
    - Must provide 6 numbers
    - Each number must be between 1-6
    - No duplicate numbers allowed
 
-2. **Linked List Structure**:
-```
-node1: value = 253, next = node2
-node2: value = 725, next = node3
-node3: value = 301, next = node4
-node4: value = 997, next = node5
-node5: value = 212, next = node6
-node6: value = 432, next = null
-```
+2. Linked List Structure:
 
-3. **Solution Logic**:
+	- node1: value = 253, next = node2
+	- node2: value = 725, next = node3
+	- node3: value = 301, next = node4
+	- node4: value = 997, next = node5
+	- node5: value = 212, next = node6
+	- node6: value = 432, next = null
+
+
+3. Solution Logic:
    - The input numbers represent the order we want to rearrange the nodes
    - The final arrangement must have values in descending order
    - Target order: 997 > 725 > 432 > 301 > 253 > 212
 
-4. **Node Values in Descending Order**:
+4. Node Values in Descending Order:
    - 997 (node4)
    - 725 (node2)
    - 432 (node6)
    - 301 (node3)
    - 253 (node1)
    - 212 (node5)
-
+```
 
 ```phase6 = 4 2 6 3 1 5```
 
@@ -2993,6 +3146,23 @@ bool main(int param_1,int param_2)
 
 ```
 
+```
+#include <stdio.h>
+#include <string.h>
+
+bool main(int argc, int argv) {
+    char buffer[140];
+
+    if (argc > 1) {
+        strcpy(buffer, *(char **)(argv + 4));
+        puts(buffer);
+    }
+
+    return argc < 2;
+}
+
+```
+
 When we analyze the code, we see that it allocates a 140-byte space, but because it uses strcpy, there is a vulnerability here.
 
 How will we exploit this vulnerability?
@@ -3094,31 +3264,32 @@ uid=1005(zaz) gid=1005(zaz) euid=0(root) groups=0(root),1005(zaz)
 
 ### How did we exploit the vulnerability?
 
+```
 Let's break down each component of our exploit:
 
-1. **Buffer Overflow with `"A"*140`**
+1. Buffer Overflow with "A"*140
    - Fills the buffer with 140 'A' characters
    - Overflows past the buffer's boundaries
    - Overwrites the saved EBP (Base Pointer)
    - Positions us to control the return address (EIP)
 
-2. **System Function Address `"\x60\xb0\xe6\xb7"`**
+2. System Function Address "\x60\xb0\xe6\xb7"
    - Address of libc's system() function
    - Written in little-endian format
    - Overwrites the return address
    - Program execution will jump here
 
-3. **Return Address Placeholder `"A"*4`**
+3. Return Address Placeholder "A"*4
    - 4 bytes of dummy data
    - Would normally be the return address after system() call
    - Not important since we won't return from shell
    - Could be any 4 bytes of data
 
-4. **Shell String Address `"\x58\xcc\xf8\xb7"`**
+4. Shell String Address "\x58\xcc\xf8\xb7"
    - Points to "/bin/sh" string in memory
    - Found in libc memory space
    - Written in little-endian format
    - Passed as argument to system()
-
+```
 
 FINALLY WE ARE ROOT #1 ;D
