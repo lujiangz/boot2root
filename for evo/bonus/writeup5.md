@@ -1980,7 +1980,7 @@ phase_4 = 9
 08048d57            int32_t eax
 08048d57            eax.b = *(i + arg1)
 08048d5a            eax.b &= 0xf
-08048d5f            eax.b = (*"isrveawhobpnutf")[sx.d(eax.b)]
+08048d5f            eax.b = (*"isrveawhobpnutfg")[sx.d(eax.b)]
 08048d62            *(i + &var_c) = eax.b
 08048d62        
 08048d6b        char var_6 = 0
@@ -1995,7 +1995,7 @@ phase_4 = 9
 
 ```
 ### Lookup Table
-"isrveawhobpnutf"
+"isrveawhobpnutfg"
  0123456789abcdef
 ```
 
@@ -2094,7 +2094,7 @@ int32_t phase_5(char* arg1) {
     for (int i = 0; i <= 5; i++) {
         int32_t eax = arg1[i];
         eax &= 0xf;
-        eax = "isrveawhobpnutf"[eax];
+        eax = "isrveawhobpnutfg"[eax];
         var_c[i] = eax;
     }
 
