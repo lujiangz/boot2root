@@ -12,3 +12,12 @@
     thor    : Publicspeakingisveryeasy.126241207201b2149opekmq426135
     
     zaz     : 646da671ca01bb5d84dbb5fb2238dc8e
+
+## Phase - codes to solve the bomb
+
+    ```phase1 = Public speaking is very easy.```
+    ```phase2 = 1 2 6 24 120 720```
+    ```phase3 = 1 b 214```
+    ```phase4 = 9```
+    ```phase5 = opekmq```
+    ```phase6 = 4 2 6 3 1 5``
