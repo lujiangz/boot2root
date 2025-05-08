@@ -1987,6 +1987,31 @@ phase_4 = 9
 ```
 
 ```
+int32_t phase_5(char* arg1) {
+    if (string_length(arg1) != 6) {
+        explode_bomb();
+    }
+
+    char var_c[6];
+    for (int i = 0; i <= 5; i++) {
+        int32_t eax = arg1[i];
+        eax &= 0xf;
+        eax = "isrveawhobpnutfg"[eax];
+        var_c[i] = eax;
+    }
+
+    int32_t result = strings_not_equal(var_c, "giants");
+
+    if (result == 0) {
+        return result;
+    } else {
+        explode_bomb();
+    }
+}
+
+```
+
+```
 ### Lookup Table
 "isrveawhobpnutfg"
  0123456789abcdef
@@ -2075,31 +2100,6 @@ For "giants":
 08048e85        while (i_3 s<= 4)
 08048e85        
 08048e90        return result
-```
-
-```
-int32_t phase_5(char* arg1) {
-    if (string_length(arg1) != 6) {
-        explode_bomb();
-    }
-
-    char var_c[6];
-    for (int i = 0; i <= 5; i++) {
-        int32_t eax = arg1[i];
-        eax &= 0xf;
-        eax = "isrveawhobpnutfg"[eax];
-        var_c[i] = eax;
-    }
-
-    int32_t result = strings_not_equal(var_c, "giants");
-
-    if (result == 0) {
-        return result;
-    } else {
-        explode_bomb();
-    }
-}
-
 ```
 
 ```
