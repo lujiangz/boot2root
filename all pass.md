@@ -15,9 +15,9 @@
 
 ## Phase - codes to solve the bomb
 
-    ```phase1 = Public speaking is very easy.```
-    ```phase2 = 1 2 6 24 120 720```
-    ```phase3 = 1 b 214```
-    ```phase4 = 9```
-    ```phase5 = opekmq```
-    ```phase6 = 4 2 6 3 1 5``
+    phase1 = Public speaking is very easy.
+    phase2 = 1 2 6 24 120 720
+    phase3 = 1 b 214
+    phase4 = 9
+    phase5 = opekmq
+    phase6 = 4 2 6 3 1 5

@@ -2123,6 +2123,97 @@ For "giants":
 ```
 
 ```
+int32_t phase_6(char* input) {
+    int32_t values[6];
+    read_six_numbers(input, values);
+    
+    // Check that each number is between 1-6 and unique
+    for (int32_t i = 0; i <= 5; i++) {
+        if (values[i] - 1 > 5) {
+            explode_bomb();
+        }
+        
+        for (int32_t j = i + 1; j <= 5; j++) {
+            if (values[i] == values[j]) {
+                explode_bomb();
+            }
+        }
+    }
+    
+    // Map each input value to a node
+    int32_t* node_ptrs[6];
+    for (int32_t i = 0; i <= 5; i++) {
+        int32_t* current = &node1;
+        
+        for (int32_t j = 1; j < values[i]; j++) {
+            current = *(current + 8/4); // Follow the pointer at offset 8
+        }
+        
+        node_ptrs[i] = current;
+    }
+    
+    // Create a linked list from the nodes
+    int32_t* head = node_ptrs[0];
+    int32_t* current = head;
+    
+    for (int32_t i = 1; i <= 5; i++) {
+        current[2] = node_ptrs[i]; // Set next pointer (at offset 8)
+        current = node_ptrs[i];
+    }
+    
+    current[2] = 0; // Terminate the linked list
+    
+    // Verify that values are in descending order
+    current = head;
+    for (int32_t i = 0; i <= 4; i++) {
+        if (*current < *(current[2])) {
+            explode_bomb();
+        }
+        current = current[2];
+    }
+    
+    return *current;
+}
+```
+
+```
+laurie@BornToSecHackMe:~$ gdb ./bomb
+
+GNU gdb (Ubuntu/Linaro 7.4-2012.04-0ubuntu2.1) 7.4-2012.04
+Copyright (C) 2012 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
+and "show warranty" for details.
+This GDB was configured as "i686-linux-gnu".
+For bug reporting instructions, please see:
+<http://bugs.launchpad.net/gdb-linaro/>...
+Reading symbols from /home/laurie/bomb...done.
+```
+```
+(gdb) b main
+Breakpoint 1 at 0x80489b7: file bomb.c, line 36.
+(gdb) run
+Starting program: /home/laurie/bomb
+
+Breakpoint 1, main (argc=1, argv=0xb7fd0ff4) at bomb.c:36
+36      bomb.c: No such file or directory.
+(gdb) display node1
+1: node1 = 253
+(gdb) display node2
+2: node2 = 725
+(gdb) display node3
+3: node3 = 301
+(gdb) display node4
+4: node4 = 997
+(gdb) display node5
+5: node5 = 212
+(gdb) display node6
+6: node6 = 432
+(gdb)
+```
+
+```
 1. Input Requirements:
    - Must provide 6 numbers
    - Each number must be between 1-6
