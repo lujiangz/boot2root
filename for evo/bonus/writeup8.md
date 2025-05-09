@@ -12,7 +12,8 @@ export shellcode=$'\x31\xdb\x89\xd8\xb0\x17\xcd\x80\x31\xdb\x89\xd8\xb0\x2e\xcd\
 When you search for "/bin/sh shellcode" on Google, this is one of the first results:
 
 ```
-https://shell-storm.org/shellcode/files/shellcode-827.html
+https://stackoverflow.com/questions/27171369/interpreting-a-shellcode
+https://site.pi3.com.pl/exp/pi3.c
 ```
 
 We copied the shellcode directly from there and put it into an environment variable.
